@@ -38,6 +38,7 @@ class Boss {
     this.color = 'blue'
     this.movingLeft=false
     this.movingRight=false
+    this.cooldown=0
     }
 
     drawBoss = (x,y) => {
@@ -47,7 +48,6 @@ class Boss {
     }
 
     attack = () =>{
-        console.log('attacking')
 
         if (this.phase==1){
 
@@ -91,6 +91,60 @@ class Game{
     this.boss= boss
 
 	}
+
+    playerBossCollision = (rect1, rect2) =>{
+
+        if(rect1.grounded==false &&     
+       rect1.x < rect2.x + rect2.width &&
+       rect1.x + rect1.width > rect2.x &&
+       rect1.y < rect2.y + rect2.height &&
+       rect1.y + rect1.height > rect2.y){
+            if(rect1.cooldown ==0){
+            rect1.y=rect2.y-rect1.height
+            if(rect2.cooldown==0){
+                rect2.health-=1
+                rect2.cooldown=15
+            }
+        }
+        }
+
+        if(rect1.x < rect2.x + rect2.width &&
+       rect1.x + rect1.width > rect2.x &&
+       rect1.y < rect2.y + rect2.height &&
+       rect1.y + rect1.height > rect2.y){
+            if(rect1.cooldown==0){
+                rect1.health-=1
+                rect1.cooldown=20
+            }
+        }
+   }
+
+    floorDetection = (rect1, rect2) => {
+    if (rect1.y + rect1.height >= rect2.y){
+    return true
+    }
+    else{return false}
+    }
+
+    platformDetection = (rect1, rect2) => {
+    if (rect1.x < rect2.x + rect2.width &&
+       rect1.x + rect1.width > rect2.x &&
+       rect1.y < rect2.y + rect2.height &&
+       rect1.y + rect1.height > rect2.y){
+        return true
+    }
+    else{return false}
+    }
+
+    hitPlayerHead = (rect1, rect2) =>{
+   if(rect1.x < rect2.x + rect2.width &&
+   rect1.x + rect1.width > rect2.x &&
+   rect1.y<rect2.y+rect2.height&&
+   rect1.y+rect1.height>rect2.y+(rect1.height/2)){
+        return true
+    }
+    else{return false}
+}
 }
 
 class Level {
@@ -131,6 +185,9 @@ class Player {
         this.jumping = false
         this.yVelocity=0
         this.xVelocity = 0
+        this.grounded=false
+        this.collision=false
+        this.cooldown=0
 	}
 
 	drawPlayer = (x, y) =>{
@@ -139,6 +196,12 @@ class Player {
 		ctx.fillRect(x, y, this.width, this.height)
 
 	}
+
+    playerHit = () =>{
+
+            this.health-=1
+        }
+    
 }
 
 function animationLoop() {
@@ -152,6 +215,7 @@ function animationLoop() {
     if(controls.up && g.player.jumping==false){
     	g.player.yVelocity-=35
     	g.player.jumping=true
+        g.player.grounded=false
     }
 
     if(controls.left){
@@ -167,6 +231,7 @@ function animationLoop() {
     g.player.y+=g.player.yVelocity;
     g.player.xVelocity*=0.9
     g.player.yVelocity*=0.9
+    g.player.grounded=false
 
 
     /*if(g.player.y>g.level.height-g.player.height){
@@ -183,64 +248,50 @@ function animationLoop() {
     	g.player.x=g.level.width-g.player.width
     }
 
-    if(hitHead(g.player, g.level.surfaces.plat1)){
+    if(g.hitPlayerHead(g.player, g.level.surfaces.plat1)){
         g.player.y=g.level.surfaces.plat1.y+2
         g.player.yVelocity=0
     }
 
-    if(hitHead(g.player, g.level.surfaces.plat2)){
+    if(g.hitPlayerHead(g.player, g.level.surfaces.plat2)){
         g.player.y=g.level.surfaces.plat1.y+2
         g.player.yVelocity=0
     }
 
-    if(floorDetection(g.player, g.level.surfaces.floor)){
+    if(g.floorDetection(g.player, g.level.surfaces.floor)){
         g.player.jumping=false
         g.player.y=g.level.surfaces.floor.y-g.player.height
         g.player.yVelocity=0
+        g.player.grounded=true
         /*console.log('on the ground')*/
     }
 
-    if(platformDetection(g.player, g.level.surfaces.plat1)){
+    if(g.platformDetection(g.player, g.level.surfaces.plat1)){
         g.player.jumping=false
         g.player.y=g.level.surfaces.plat1.y-g.player.height
         g.player.yVelocity=0
-        console.log('on plat1')
+        g.player.grounded=true
     }
 
-    if(platformDetection(g.player, g.level.surfaces.plat2)){
+    if(g.platformDetection(g.player, g.level.surfaces.plat2)){
         g.player.jumping=false
         g.player.y=g.level.surfaces.plat1.y-g.player.height
         g.player.yVelocity=0
-        console.log('on plat2')
+        g.player.grounded=true
     }
-}
 
-const hitHead = (rect1, rect2) =>{
-   if(rect1.x < rect2.x + rect2.width &&
-   rect1.x + rect1.width > rect2.x &&
-   rect1.y<rect2.y+rect2.height&&
-   rect1.y+rect1.height>rect2.y+30){
-        return true
+    g.playerBossCollision(g.player,g.boss)
+
+    if(g.player.cooldown>0){
+        g.player.cooldown-=1
     }
-    else{return false}
-}
 
-
-const platformDetection = (rect1, rect2) => {
-    if (rect1.x < rect2.x + rect2.width &&
-       rect1.x + rect1.width > rect2.x &&
-       rect1.y < rect2.y + rect2.height &&
-       rect1.y + rect1.height > rect2.y){
-        return true
+    if(g.boss.cooldown>0){
+        g.boss.cooldown-=1
     }
-    else{return false}
-}
 
-const floorDetection = (rect1, rect2) => {
-    if (rect1.y + rect1.height >= rect2.y){
-    return true
-    }
-    else{return false}
+    console.log(`player health: ${g.player.health}  boss health: ${g.boss.health}`)   
+    
 }
 
 let level1Surfaces = {
