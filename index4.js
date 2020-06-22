@@ -1,6 +1,6 @@
 let canvas = document.querySelector('#canvas')
-canvas.height = window.innerHeight-20
-canvas.width = window.innerWidth-20
+canvas.height = window.innerHeight-70
+canvas.width = window.innerWidth-70
 let ctx = canvas.getContext('2d')
 
 const controls = {
@@ -42,6 +42,12 @@ class Boss {
     }
 
     drawBoss = (x,y) => {
+
+        if(this.cooldown!=0){
+            this.color='red'
+        }
+        else{this.color='blue'}
+
         ctx.fillStyle=this.color
         ctx.fillRect(x, y, this.width, this.height)
 
@@ -103,7 +109,7 @@ class Game{
             rect1.y=rect2.y-rect1.height
             if(rect2.cooldown==0){
                 rect2.health-=1
-                rect2.cooldown=15
+                rect2.cooldown=20
             }
         }
         }
@@ -120,31 +126,22 @@ class Game{
    }
 
     floorDetection = (rect1, rect2) => {
-    if (rect1.y + rect1.height >= rect2.y){
-    return true
-    }
-    else{return false}
+    return (rect1.y + rect1.height >= rect2.y)
     }
 
     platformDetection = (rect1, rect2) => {
-    if (rect1.x < rect2.x + rect2.width &&
+    return (rect1.x < rect2.x + rect2.width &&
        rect1.x + rect1.width > rect2.x &&
        rect1.y < rect2.y + rect2.height &&
-       rect1.y + rect1.height > rect2.y){
-        return true
-    }
-    else{return false}
+       rect1.y + rect1.height > rect2.y)
     }
 
     hitPlayerHead = (rect1, rect2) =>{
-   if(rect1.x < rect2.x + rect2.width &&
+   return (rect1.x < rect2.x + rect2.width &&
    rect1.x + rect1.width > rect2.x &&
    rect1.y<rect2.y+rect2.height&&
-   rect1.y+rect1.height>rect2.y+(rect1.height/2)){
-        return true
+   rect1.y+rect1.height>rect2.y+(rect1.height/2))
     }
-    else{return false}
-}
 }
 
 class Level {
@@ -192,16 +189,15 @@ class Player {
 
 	drawPlayer = (x, y) =>{
 
+        if(this.cooldown!=0){
+            this.color='red'
+        }
+        else{this.color='green'}
+
 		ctx.fillStyle = this.color
 		ctx.fillRect(x, y, this.width, this.height)
 
 	}
-
-    playerHit = () =>{
-
-            this.health-=1
-        }
-    
 }
 
 function animationLoop() {
@@ -211,6 +207,8 @@ function animationLoop() {
     g.player.drawPlayer(g.player.x,g.player.y)
     g.boss.drawBoss(g.boss.x,g.boss.y)
     g.boss.attack()
+    document.getElementById('player-health').innerText=g.player.health
+    document.getElementById('boss-health').innerText=g.boss.health
 
     if(controls.up && g.player.jumping==false){
     	g.player.yVelocity-=35
@@ -232,13 +230,6 @@ function animationLoop() {
     g.player.xVelocity*=0.9
     g.player.yVelocity*=0.9
     g.player.grounded=false
-
-
-    /*if(g.player.y>g.level.height-g.player.height){
-    	g.player.jumping=false
-    	g.player.y=g.level.height-g.player.height
-    	g.player.yVelocity=0
-    }*/
 
     if(g.player.x<0){
     	g.player.x=0
@@ -263,7 +254,6 @@ function animationLoop() {
         g.player.y=g.level.surfaces.floor.y-g.player.height
         g.player.yVelocity=0
         g.player.grounded=true
-        /*console.log('on the ground')*/
     }
 
     if(g.platformDetection(g.player, g.level.surfaces.plat1)){
@@ -289,8 +279,6 @@ function animationLoop() {
     if(g.boss.cooldown>0){
         g.boss.cooldown-=1
     }
-
-    console.log(`player health: ${g.player.health}  boss health: ${g.boss.health}`)   
     
 }
 
@@ -298,9 +286,9 @@ let level1Surfaces = {
 
 	floor: {x:0, y:canvas.height-1, width:canvas.width,heigh:2},
 
-	plat1: {x:canvas.width/7, y:canvas.height-120, width:200, height:2},
+	plat1: {x:canvas.width/7, y:canvas.height-150, width:200, height:2},
 
-	plat2: {x:canvas.width*.7, y:canvas.height-120, width:200, height:2}
+	plat2: {x:canvas.width*.75, y:canvas.height-150, width:200, height:2}
 }
 
 
