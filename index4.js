@@ -24,9 +24,20 @@ const controls = {
 		}
 	}
 
+class Projectile {
+    constructor(x,y){
+        this.color='black'
+        this.width=30
+        this.height=5
+        this.x=x
+        this.y=y
+        this.xVelocity=0
+    }
+}   
+
 class Boss {
     constructor(){
-    this.health = 10
+    this.health = 41
     this.attacks=null
     this.width=75
     this.height=75
@@ -39,6 +50,8 @@ class Boss {
     this.movingLeft=false
     this.movingRight=false
     this.cooldown=0
+    this.projectiles=null
+    this.projectileFired=false
     }
 
     drawBoss = (x,y) => {
@@ -53,11 +66,21 @@ class Boss {
 
     }
 
-    attack = () =>{
+    /*attack = () =>{
 
         if (this.phase==1){
+            this.attack1()
+        }
 
-            if(this.x >= canvas.width-this.width){
+        if(this.phase==2){
+            this.attack1()
+            this.attack2()
+        }
+    }*/
+
+    attack1 = () => {
+
+        if(this.x >= canvas.width-this.width){
                 this.movingRight=false
                 this.movingLeft=true
                 this.x=canvas.width-this.width
@@ -84,10 +107,25 @@ class Boss {
 /*              this.xVelocity*=.9
 */            }
 
-        }
     }
 
+    attack2 = () =>{
+            if(this.projectileFired==false){
+            this.projectileFired=true    
+            this.projectiles = new Projectile(this.x,this.y+(this.height/2))}
+        
+            
+       
+        ctx.fillStyle=this.projectiles.color
+        ctx.fillRect(this.projectiles.x-=10, this.projectiles.y, this.projectiles.width, this.projectiles.height)
+
+        if(this.projectiles.x<0){
+            this.projectileFired=false
+        }
+    
 }
+}
+
 
 
 class Game{
@@ -123,6 +161,7 @@ class Game{
                 rect1.cooldown=20
             }
         }
+
    }
 
     floorDetection = (rect1, rect2) => {
@@ -206,7 +245,10 @@ function animationLoop() {
     g.level.drawLevel()
     g.player.drawPlayer(g.player.x,g.player.y)
     g.boss.drawBoss(g.boss.x,g.boss.y)
-    g.boss.attack()
+    g.boss.attack1()
+    if(g.boss.phase==2){
+        g.boss.attack2()
+    }
     document.getElementById('player-health').innerText=g.player.health
     document.getElementById('boss-health').innerText=g.boss.health
 
@@ -279,7 +321,14 @@ function animationLoop() {
     if(g.boss.cooldown>0){
         g.boss.cooldown-=1
     }
+
+    if(g.boss.health==40){
+        g.boss.phase=2
+    }
+
     
+/*    g.boss.drawProjectile(g.boss.projectiles)
+*/    
 }
 
 let level1Surfaces = {
