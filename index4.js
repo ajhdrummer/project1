@@ -54,45 +54,60 @@ class Game{
             if(rect1.cooldown==0){
                 rect1.health-=1
                 rect1.cooldown=20
+                ctx.fillStyle='red'
+                ctx.fillRect(rect1.x+rect1.width/4,rect1.y,rect1.width/2,3)
             }
         }
 
    }
 
     projectileCollisionDetection = (rect1, rect2) => {
-    if(rect1.x < rect2.x + rect2.width &&
-       rect1.x + rect1.width > rect2.x &&
-       rect1.y < rect2.y + rect2.height &&
-       rect1.y + rect1.height > rect2.y){
-        if(rect1.cooldown==0){
-                rect1.health-=1
-                rect1.cooldown=20
+        if(rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.y + rect1.height > rect2.y){
+            if(rect1.cooldown==0){
+                    rect1.health-=1
+                    rect1.cooldown=20
+                    ctx.fillStyle='red'
+                    ctx.fillRect(rect1.x+rect1.width/4,rect1.y,rect1.width/2,3)
             }
-    }
+        }
     }
 
     floorDetection = (rect1, rect2) => {
-    return (rect1.y + rect1.height >= rect2.y)
+        return (rect1.y + rect1.height >= rect2.y)
     }
 
     platformDetection = (rect1, rect2) => {
-    return (rect1.x < rect2.x + rect2.width &&
-       rect1.x + rect1.width > rect2.x &&
-       rect1.y < rect2.y + rect2.height &&
-       rect1.y + rect1.height > rect2.y)
-    }
+        return (rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.y + rect1.height > rect2.y)
+        }
 
     hitPlayerHead = (rect1, rect2) =>{
-   return (rect1.x < rect2.x + rect2.width &&
-       rect1.x + rect1.width > rect2.x &&
-       rect1.y<rect2.y+rect2.height&&
-       rect1.y+rect1.height>rect2.y+(rect1.height/2))
+       return (rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y<rect2.y+rect2.height&&
+           rect1.y+rect1.height>rect2.y+(rect1.height/2))
+        }
+}
+
+class Stalactite {
+    constructor(x){
+        this.color='purple'
+        this.width=12
+        this.height=60
+        this.y=-this.height
+        this.x=x
+        this.yVelocity=0
     }
 }
 
 class Projectile {
     constructor(x,y){
-        this.color='black'
+        this.color='orange'
         this.width=30
         this.height=5
         this.x=x
@@ -103,7 +118,7 @@ class Projectile {
 
 class Boss {
     constructor(){
-    this.health = 41
+    this.health = 30
     this.attacks=null
     this.width=75
     this.height=75
@@ -120,6 +135,8 @@ class Boss {
     this.projectileFiredLeft=false
     this.projectileRight=null
     this.projectileFiredRight=false
+    this.stalactites=[]
+    this.iter = 0
     }
 
     drawBoss = (x,y) => {
@@ -168,7 +185,7 @@ class Boss {
             this.projectileLeft.xVelocity=this.xVelocity}
         
         if(this.projectileLeft!=null){    
-            this.projectileLeft.xVelocity -=1.5
+            this.projectileLeft.xVelocity -=1.3
             ctx.fillStyle=this.projectileLeft.color
             ctx.fillRect(this.projectileLeft.x+=this.projectileLeft.xVelocity, this.projectileLeft.y, this.projectileLeft.width, this.projectileLeft.height)
 
@@ -183,7 +200,7 @@ class Boss {
             this.projectileRight.xVelocity=this.xVelocity}
             
             if(this.projectileRight!=null){    
-                this.projectileRight.xVelocity +=1.5
+                this.projectileRight.xVelocity +=1.3
                 ctx.fillStyle=this.projectileRight.color
                 ctx.fillRect(this.projectileRight.x+=this.projectileRight.xVelocity, this.projectileRight.y, this.projectileRight.width, this.projectileRight.height)
 
@@ -191,6 +208,13 @@ class Boss {
                 this.projectileFiredRight=false
             }
         }
+
+    }
+
+    attack3 = () => {
+
+        let s = new Stalactite(g.player.x+g.player.width/2-6)
+        this.stalactites.push(s)
 
     }
 }
@@ -203,7 +227,7 @@ class Level {
 	}
 
 	drawLevel = () => {
-		ctx.fillStyle='black'
+		ctx.fillStyle='white'
         let a =[]
 		for (const property in this.surfaces){
 
@@ -221,14 +245,14 @@ class Player {
 		this.health = 10
 		this.x =  0
         this.y = 0
-        /*this.widthCanvas = 64
-        this.heightCanvas = 64*/
-        /*this.xImage = 0
-        this.yImage = 64*11*/
+        this.widthCanvas = 64
+        this.heightCanvas = 64
+        this.xImage = 0
+        this.yImage = 64*11
         this.width = 64
         this.height = 64
-        /*this.image = new Image()
-        this.image.src = '../sprite.png'*/
+        this.image = new Image()
+        this.image.src = 'playerspritesheet.png'
         this.color = 'green'
         this.jumping = false
         this.yVelocity=0
@@ -236,6 +260,8 @@ class Player {
         this.grounded=false
         this.collision=false
         this.cooldown=0
+        this.movingRight=true
+        this.movingLeft=false
 	}
 
 	drawPlayer = (x, y) =>{
@@ -245,31 +271,42 @@ class Player {
         }
         else{this.color='green'}
 
-		ctx.fillStyle = this.color
-		ctx.fillRect(x, y, this.width, this.height)
+		/*ctx.fillStyle = this.color
+		ctx.fillRect(x, y, this.width, this.height)*/
+        ctx.drawImage(this.image, this.xImage, this.yImage, this.width, this.height, x,y, this.widthCanvas, this.heightCanvas) // (imageObj, imageX, imageY, imageWidth, imageHeight, xCanvas, yCanvas, widthCanvas, heightCanvas)
 
 	}
 
     movePlayer = () => {
 
         if(g.controls.up && this.jumping==false){
-            this.yVelocity-=35
+            this.yVelocity-=40
             this.jumping=true
             this.grounded=false
         }
 
         if(g.controls.left){
-            this.xVelocity-=0.5
+            this.movingRight=false
+            this.movingLeft=true
+            this.xVelocity-=0.9
+            this.yImage = 64*9
+            this.xCanvas += 5
+            this.xImage = (this.xImage + 64) % 576
         }
 
         if(g.controls.right){
-            this.xVelocity+=0.5
+            this.movingLeft=false
+            this.movingRight=true
+            this.xVelocity+=0.9
+            this.yImage = 64*11
+            this.xCanvas += 5
+            this.xImage = (this.xImage + 64) % 576
         }
 
         this.yVelocity+=1.5;
         this.x += g.player.xVelocity;
         this.y+=g.player.yVelocity;
-        this.xVelocity*=0.9
+        this.xVelocity*=0.88
         this.yVelocity*=0.9
         this.grounded=false
 
@@ -295,7 +332,7 @@ function animationLoop() {
     document.getElementById('player-health').innerText=g.player.health
     document.getElementById('boss-health').innerText=g.boss.health
 
-    if(g.boss.phase==2){
+    if(g.boss.phase==2 || g.boss.phase==3){
         g.boss.attack2()
         if(g.boss.projectileLeft != null)
             g.projectileCollisionDetection(g.player,g.boss.projectileLeft)
@@ -303,10 +340,26 @@ function animationLoop() {
             g.projectileCollisionDetection(g.player,g.boss.projectileRight)
     }
 
+    if(g.boss.phase==3){
+        if(g.boss.iter%50==0){
+        g.boss.attack3()
+        }   
+        g.boss.stalactites.forEach(s =>{
+            if(s.y > canvas.height){
+                g.boss.stalactites.splice(s,1)
+            }
+            s.yVelocity +=1.5
+            ctx.fillStyle=s.color
+            ctx.fillRect(s.x, s.y+=s.yVelocity, s.width, s.height)
+            g.projectileCollisionDetection(g.player,s)
+        })
+    }
+
     g.player.movePlayer()
 
     if(g.floorDetection(g.player, g.level.surfaces.floor)){
         g.player.jumping=false
+        g.player.doubleJumping=false
         g.player.y=g.level.surfaces.floor.y-g.player.height
         g.player.yVelocity=0
         g.player.grounded=true
@@ -322,9 +375,15 @@ function animationLoop() {
         g.boss.cooldown-=1
     }
 
-    if(g.boss.health==40){
+    if(g.boss.health==20){
         g.boss.phase=2
     }
+
+    if(g.boss.health==10){
+        g.boss.phase=3
+    }
+
+    g.boss.iter++
 }
 
 let l = new Level({floor: {x:0, y:canvas.height-1, width:canvas.width,heigh:2}})
