@@ -1,0 +1,27 @@
+
+      
+    	body{
+    		overflow:hidden;
+        background-color: black;;
+        margin:0;
+    	}
+
+      ul{
+        display: inline
+      }
+
+      li{
+        color: white;
+      }
+
+      canvas{
+        background: url('background.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      #button-div{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }

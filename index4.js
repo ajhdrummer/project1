@@ -2,6 +2,11 @@ let canvas = document.querySelector('#canvas')
 canvas.height = window.innerHeight-70
 canvas.width = window.innerWidth-70
 let ctx = canvas.getContext('2d')
+const audio = new Audio('BossMain.wav')
+audio.volume = 0.4
+audio.loop = true
+
+
 
 class Game{
     constructor(level,player,boss){
@@ -325,6 +330,10 @@ function animationLoop() {
     g.player.drawPlayer(g.player.x,g.player.y)
     g.boss.drawBoss(g.boss.x,g.boss.y)
     g.boss.attack1()
+
+    if(g.controls.right==true){
+        audio.play()
+    }
 
     document.getElementById('player-health').innerText=g.player.health
     document.getElementById('boss-health').innerText=g.boss.health
