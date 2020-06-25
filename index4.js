@@ -41,7 +41,7 @@ class Game{
             if(rect1.cooldown ==0){
                 rect1.jumping=true
                 rect1.y=rect2.y-rect1.height
-                rect1.yVelocity=-20
+                rect1.yVelocity=-30
             if(rect2.cooldown==0){
                 rect2.health-=1
                 rect2.cooldown=20
@@ -114,8 +114,8 @@ class Projectile {
 class Boss {
     constructor(){
     this.health = 30
-    this.width=100
-    this.height=75
+    this.width=120
+    this.height=100
     this.x=0
     this.y=canvas.height-this.height
     this.xVelocity=0
@@ -136,6 +136,7 @@ class Boss {
     this.yImage = 30
     this.imageWidth=68
     this.imageHeight=45
+    this.speed=0.1
     }
 
     drawBoss = (x,y) => {
@@ -161,7 +162,7 @@ class Boss {
             }
 
         if(this.movingLeft==true){    
-            this.xVelocity-=0.1
+            this.xVelocity-=this.speed
             this.x += this.xVelocity;
 
             if(Math.round(this.x)%5==0){
@@ -177,7 +178,7 @@ class Boss {
             }
 
         if(this.movingRight==true){
-            this.xVelocity+=0.1
+            this.xVelocity+=this.speed
             this.x += this.xVelocity; 
             if(Math.round(this.x)%5==0){
                 this.xImage= (this.xImage + 72) % 432
@@ -337,7 +338,7 @@ function animationLoop() {
     }
 
     if(g.boss.phase==3){
-        if(g.boss.iter%50==0){
+        if(g.boss.iter%40==0){
         g.boss.attack3()
         }   
         g.boss.stalactites.forEach(s =>{
@@ -373,23 +374,42 @@ function animationLoop() {
         g.boss.phase=3
     }
 
+    if(g.boss.phase==2){
+        g.boss.speed=0.15
+    }
+
+    if(g.boss.phase==3){
+        g.boss.speed=0.2
+    }
+
     g.boss.iter++
 
     if(g.player.health==0){
         document.getElementById('player-health').innerText=0
         window.cancelAnimationFrame(animationID)
-        alert('You lose. Click ok to play again')
-        window.location.reload()
+        btn.innerText='You lose. Click play again'
+        btn.style.backgroundColor='red'
+        canvas.remove()
+        
     }
 
     if(g.boss.health==0){
         document.getElementById('boss-health').innerText=0
         window.cancelAnimationFrame(animationID)
-        alert('You win! Click ok to play again')
-        window.location.reload()
+        btn.innerText = 'You win! Click to play again'
+        btn.style.backgroundColor='green'
+        canvas.remove()
     }
+
 }
-let l = new Level({floor: {x:0, y:canvas.height-1, width:canvas.width,heigh:2}})
+
+let btn = document.createElement('button')
+btn.style.fontWeight='bold'
+btn.style.marginTop='200px'
+btn.style.height='100px'
+document.getElementById('button-div').appendChild(btn)
+btn.addEventListener('click', function(){location.reload()})
+let l = new Level({floor: {x:0, y:canvas.height-1, width:canvas.width,heigh:2}})    
 let p = new Player()
 let b = new Boss()
 let g = new Game(l,p,b)
