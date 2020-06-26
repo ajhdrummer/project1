@@ -35,61 +35,61 @@ class Game{
 
 }
 
-    playerBossCollision = (rect1, rect2) =>{
+    playerBossCollision = (player, boss) =>{
 
-        if(rect1.grounded==false &&
-           (!(rect1.y +rect1.height > rect2.y+15)) &&      
-           rect1.x < rect2.x + rect2.width &&
-           rect1.x + rect1.width > rect2.x &&
-           rect1.y < rect2.y + rect2.height &&
-           rect1.y + rect1.height > rect2.y){
-            if(rect1.cooldown ==0){
-                rect1.jumping=true
-                rect1.y=rect2.y-rect1.height
-                rect1.yVelocity=-30
-            if(rect2.cooldown==0){
-                rect2.health-=1
-                rect2.cooldown=20
+        if(player.grounded==false &&
+           (!(player.y +player.height > boss.y+15)) &&      
+           player.x < boss.x + boss.width &&
+           player.x + player.width > boss.x &&
+           player.y < boss.y + boss.height &&
+           player.y + player.height > boss.y){
+            if(player.cooldown ==0){
+                player.jumping=true
+                player.y=boss.y-player.height
+                player.yVelocity=-30
+            if(boss.cooldown==0){
+                boss.health-=1
+                boss.cooldown=20
                 ctx.fillStyle='red'
-                ctx.fillRect(rect2.x+rect2.width/4,rect2.y,rect2.width/2,3)
+                ctx.fillRect(boss.x+boss.width/4,boss.y,boss.width/2,3)
                 }
             }
         }
 
-        if(rect1.x < rect2.x + rect2.width-30 &&
-           rect1.x + rect1.width > rect2.x +30 &&
-           rect1.y < rect2.y + rect2.height &&
-           rect1.y + rect1.height > rect2.y){
-            if(rect1.cooldown==0){
-                rect1.health-=1
-                rect1.cooldown=20
+        if(player.x < boss.x + boss.width-30 &&
+           player.x + player.width > boss.x +30 &&
+           player.y < boss.y + boss.height &&
+           player.y + player.height > boss.y){
+            if(player.cooldown==0){
+                player.health-=1
+                player.cooldown=20
                 ctx.fillStyle='red'
-                ctx.fillRect(rect1.x+rect1.width/4,rect1.y,rect1.width/2,3)
+                ctx.fillRect(player.x+player.width/4,player.y,player.width/2,3)
             }
         }
 
    }
 
-    projectileCollisionDetection = (rect1, rect2) => {
-        if(rect1.x < rect2.x + rect2.width &&
-           rect1.x + rect1.width > rect2.x &&
-           rect1.y < rect2.y + rect2.height &&
-           rect1.y + rect1.height > rect2.y){
-            if(rect1.cooldown==0){
-                    rect1.health-=1
-                    rect1.cooldown=20
+    projectileCollisionDetection = (player, projectile) => {
+        if(player.x < projectile.x + projectile.width &&
+           player.x + player.width > projectile.x &&
+           player.y < projectile.y + projectile.height &&
+           player.y + player.height > projectile.y){
+            if(player.cooldown==0){
+                    player.health-=1
+                    player.cooldown=20
                     ctx.fillStyle='red'
-                    ctx.fillRect(rect1.x+rect1.width/4,rect1.y,rect1.width/2,3)
+                    ctx.fillRect(player.x+player.width/4,player.y,player.width/2,3)
             }
         }
     }
 
-    floorDetection = (rect1, rect2) => {
-        if(rect1.y + rect1.heightCanvas >= rect2.y){
-            rect1.jumping=false
-            rect1.y=rect2.y-rect1.heightCanvas
-            rect1.yVelocity=0
-            rect1.grounded=true
+    floorDetection = (player, floor) => {
+        if(player.y + player.heightCanvas >= floor.y){
+            player.jumping=false
+            player.y=floor.y-player.heightCanvas
+            player.yVelocity=0
+            player.grounded=true
         }
     }
 }
@@ -350,14 +350,14 @@ function animationLoop() {
         if(g.boss.iter%40==0){
         g.boss.attack3()
         }   
-        g.boss.stalactites.forEach(s =>{
-            if(s.y > canvas.height){
-                g.boss.stalactites.splice(s,1)
+        g.boss.stalactites.forEach(stalactite =>{
+            if(stalactite.y > canvas.height){
+                g.boss.stalactites.splice(stalactite,1)
             }
-            s.yVelocity +=1.5
-            ctx.fillStyle=s.color
-            ctx.fillRect(s.x, s.y+=s.yVelocity, s.width, s.height)
-            g.projectileCollisionDetection(g.player,s)
+            stalactite.yVelocity +=1.5
+            ctx.fillStyle=stalactite.color
+            ctx.fillRect(stalactite.x, stalactite.y+=stalactite.yVelocity, stalactite.width, stalactite.height)
+            g.projectileCollisionDetection(g.player,stalactite)
         })
     }
 
