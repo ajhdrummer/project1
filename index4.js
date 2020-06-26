@@ -395,7 +395,7 @@ function animationLoop() {
     if(g.player.health==0){
         document.getElementById('player-health').innerText=0
         window.cancelAnimationFrame(animationID)
-        btn.innerText='You lose. Click play again'
+        btn.innerText='You lose. Click to play again'
         btn.style.backgroundColor='red'
         canvas.remove()
         
