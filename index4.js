@@ -7,7 +7,6 @@ audio.volume = 0.4
 audio.loop = true
 
 
-
 class Game{
     constructor(level,player,boss){
         this.level = level
@@ -331,9 +330,9 @@ function animationLoop() {
     g.boss.drawBoss(g.boss.x,g.boss.y)
     g.boss.attack1()
 
-    if(g.controls.right==true){
+    /*if(g.controls.right==true){
         audio.play()
-    }
+    }*/
 
     document.getElementById('player-health').innerText=g.player.health
     document.getElementById('boss-health').innerText=g.boss.health
@@ -412,6 +411,20 @@ function animationLoop() {
 
 }
 
+let modal = document.getElementById("myModal");
+let span = document.getElementsByClassName("close")[0];
+span.onclick = function() {
+  modal.style.display = "none";
+  animationLoop()
+  audio.play()
+}
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+    animationLoop()
+  audio.play()
+  }
+}
 let btn = document.createElement('button')
 btn.style.fontWeight='bold'
 btn.style.marginTop='200px'
@@ -427,4 +440,3 @@ g.player.x=0
 g.player.y=g.level.height-g.player.height
 window.addEventListener('keydown', g.keyListener)
 window.addEventListener('keyup', g.keyListener)
-animationLoop()
