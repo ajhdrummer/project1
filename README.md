@@ -1,10 +1,10 @@
 First Ironhack project.
 
-Game built using canvas.
+Game built using HTML Canvas, Javascript, and CSS.
 
 Move left and right with arrow keys, jump by pressing the space bar. 
 
 Kill the bad guy.
 
-https://ajhdrummer.github.io/project1/
+https://hararia.github.io/EliPartOne/
 
