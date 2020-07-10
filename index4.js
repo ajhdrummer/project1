@@ -165,7 +165,7 @@ class Boss {
             this.xVelocity=0
             }
 
-        if(this.movingLeft==true){    
+        if(this.movingLeft){    
             this.xVelocity-=this.speed
             this.x += this.xVelocity;
 
@@ -181,7 +181,7 @@ class Boss {
             this.xVelocity=0
             }
 
-        if(this.movingRight==true){
+        if(this.movingRight){
             this.xVelocity+=this.speed
             this.x += this.xVelocity; 
             if(Math.round(this.x)%5==0){
