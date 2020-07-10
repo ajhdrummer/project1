@@ -145,14 +145,6 @@ class Boss {
 
     drawBoss = (x,y) => {
 
-        /*if(this.cooldown!=0){
-            this.color='red'
-        }
-        else{this.color='blue'}
-
-        ctx.fillStyle=this.color
-        ctx.fillRect(x, y, this.width, this.height)*/
-
         ctx.drawImage(this.image, this.xImage, this.yImage, this.imageWidth, this.imageHeight, x,y, this.width, this.height) 
     }
 
@@ -329,10 +321,6 @@ function animationLoop() {
     g.player.drawPlayer(g.player.x,g.player.y)
     g.boss.drawBoss(g.boss.x,g.boss.y)
     g.boss.attack1()
-
-    /*if(g.controls.right==true){
-        audio.play()
-    }*/
 
     document.getElementById('player-health').innerText=g.player.health
     document.getElementById('boss-health').innerText=g.boss.health
